@@ -1,0 +1,136 @@
+//Library yang dibutuhkan
+
+#include <LiquidCrystal_I2C.h>
+#include <Adafruit_SSD1306.h>
+#include <DHT.h>
+
+//Source LCD
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+//Pendefinisian
+#define DHT_PIN 6
+#define DHT_TYPE DHT22
+DHT dht(DHT_PIN, DHT_TYPE);
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 32 // OLED display height, in pixels
+#define OLED_RESET 4
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, & Wire, OLED_RESET);
+#define RED_LED 2
+#define YELLOW_LED 3
+#define GREEN_LED 4
+#define BLOWER_PIN 7
+#define BUZZER_PIN 8
+
+//Setup
+void setup() {
+  //Another LCD Begin
+  lcd.home();
+  Serial.begin(9600);
+  lcd.init();
+  lcd.backlight();
+  dht.begin();
+  Serial.begin(9600);
+  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3C for 128x32
+    Serial.println(F("SSD1306 allocation failed"));
+    for (;;); // Don't proceed, loop forever
+  }
+  pinMode(RED_LED, OUTPUT);
+  pinMode(YELLOW_LED, OUTPUT);
+  pinMode(GREEN_LED, OUTPUT);
+  pinMode(BLOWER_PIN, OUTPUT);
+  pinMode(BUZZER_PIN, OUTPUT);
+}
+
+void loop() {
+  // Membaca temperatur dan kelembapan dari DHT
+  float temperature = dht.readTemperature();
+  float humidity = dht.readHumidity();
+  // 
+  //LIQ
+  // clear LCD and set cursor to top left corner
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  // print values to LCD
+  lcd.print("Temperature:");
+  lcd.print(temperature);
+  lcd.print("°C");
+  lcd.setCursor(0, 1);
+  lcd.print("Humidity: ");
+  lcd.print(humidity);
+  lcd.print("%");
+  delay(500);
+
+  //Oled
+  display.clearDisplay();
+  display.setTextSize(2); // Normal 1:1 pixel scale
+  display.setTextColor(WHITE); // Draw white text
+  display.setCursor(0, 0); // Start at top-left corner
+  display.print("MIKROKONTROLER");
+  display.display();
+  delay(1000);
+  display.clearDisplay();
+  display.setTextSize(2); // Normal 1:1 pixel scale
+  display.setTextColor(WHITE); // Draw white text
+  display.setCursor(0, 0); // Start at top-left corner
+  display.print("Billy");
+  display.display();
+  delay(400);
+  display.clearDisplay();
+  display.setTextSize(2); // Normal 1:1 pixel scale
+  display.setTextColor(WHITE); // Draw white text
+  display.setCursor(0, 0); // Start at top-left corner
+  display.print("Verra");
+  display.display();
+  delay(400);
+  display.clearDisplay();
+  display.setTextSize(2); // Normal 1:1 pixel scale
+  display.setTextColor(WHITE); // Draw white text
+  display.setCursor(0, 0); // Start at top-left corner
+  display.print("Restu");
+  display.display();
+  delay(400);
+  display.clearDisplay();
+  display.setTextSize(2); // Normal 1:1 pixel scale
+  display.setTextColor(WHITE); // Draw white text
+  display.setCursor(0, 0); // Start at top-left corner
+  display.print("Rivaldi");
+  display.display();
+  delay(400);
+  display.clearDisplay();
+  display.setTextSize(2); // Normal 1:1 pixel scale
+  display.setTextColor(WHITE); // Draw white text
+  display.setCursor(0, 0); // Start at top-left corner
+  display.print("Widiansyah");
+  display.display();
+  delay(100);
+  // update OLED display
+  display.display();
+  // check humidity range and turn on appropriate LED
+  if (humidity < 50) {
+    digitalWrite(RED_LED, HIGH);
+    digitalWrite(YELLOW_LED, LOW);
+    digitalWrite(GREEN_LED, LOW);
+  } else if (humidity < 60) {
+    digitalWrite(RED_LED, LOW);
+    digitalWrite(YELLOW_LED, HIGH);
+    digitalWrite(GREEN_LED, LOW);
+  } else {
+    digitalWrite(RED_LED, LOW);
+    digitalWrite(YELLOW_LED, LOW);
+    digitalWrite(GREEN_LED, HIGH);
+  }
+
+  // check temperature and turn on blower and buzzer if necessary
+  if (temperature > 30) {
+    digitalWrite(BLOWER_PIN, HIGH);
+    digitalWrite(BUZZER_PIN, HIGH);
+    delay(500);
+    digitalWrite(BUZZER_PIN, LOW);
+    delay(500);
+  } else {
+    digitalWrite(BLOWER_PIN, LOW);
+    digitalWrite(BUZZER_PIN, LOW);
+  }
+
+  delay(100);
+}
